@@ -1,7 +1,7 @@
-const bcrypt = require('bcryptjs');
-const mongodb = require('mongodb');
+const bcrypt = require("bcryptjs");
+const mongodb = require("mongodb");
 
-const db = require('../data/database');
+const db = require("../data/database");
 
 class User {
   constructor(email, password, fullname, street, postal, city) {
@@ -15,17 +15,24 @@ class User {
     };
   }
 
+  static verifyUser(email) {
+    return db
+      .getDb()
+      .collection("users")
+      .updateOne({ email: email }, { $set: { verified: true } });
+  }
+
   static findById(userId) {
     const uid = new mongodb.ObjectId(userId);
 
     return db
       .getDb()
-      .collection('users')
+      .collection("users")
       .findOne({ _id: uid }, { projection: { password: 0 } });
   }
 
   getUserWithSameEmail() {
-    return db.getDb().collection('users').findOne({ email: this.email });
+    return db.getDb().collection("users").findOne({ email: this.email });
   }
 
   async existsAlready() {
@@ -39,11 +46,12 @@ class User {
   async signup() {
     const hashedPassword = await bcrypt.hash(this.password, 12);
 
-    await db.getDb().collection('users').insertOne({
+    await db.getDb().collection("users").insertOne({
       email: this.email,
       password: hashedPassword,
       name: this.name,
       address: this.address,
+      verified: false,
     });
   }
 
