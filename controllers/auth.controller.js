@@ -135,7 +135,11 @@ async function login(req, res, next) {
     email: user.email,
     password: user.password,
   };
-
+  if (!existingUser) {
+    sessionFlash.flashDataToSession(req, sessionErrorData, function () {
+      res.redirect("/login");
+    });
+  }
   if (!userIsVerified) {
     sessionFlash.flashDataToSession(req, sessionErrorData, function () {
       sendVerificationEmail(req.body.email);
