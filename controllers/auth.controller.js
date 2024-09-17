@@ -127,9 +127,11 @@ async function login(req, res, next) {
   }
   const userIsVerified = existingUser && existingUser.verified;
   const sessionErrorData = {
-    errorMessage: userIsVerified
+    errorMessage: !existingUser
       ? "Invalid email or password. Please try again."
-      : "Please verify your email first.",
+      : !userIsVerified
+      ? "Please verify your email first."
+      : "Invalid email or password. Please try again.",
     email: user.email,
     password: user.password,
   };
